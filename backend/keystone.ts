@@ -1,6 +1,8 @@
 import { createAuth } from '@keystone-next/auth';
 import { config, createSchema } from '@keystone-next/keystone/schema';
+import { ProductImage } from './schemas/ProductImage';
 import { User } from './schemas/User';
+import { Product } from './schemas/Product';
 import 'dotenv/config';
 import {
   withItemData,
@@ -26,32 +28,34 @@ const { withAuth } = createAuth({
 });
 
 export default withAuth(
-    config({
-      // @ts-ignore
-      server: {
-        cors: {
-          origin: [process.env.FRONTEND_URL],
-          credentials: true,
-        },
+  config({
+    // @ts-ignore
+    server: {
+      cors: {
+        origin: [process.env.FRONTEND_URL],
+        credentials: true,
       },
-      db: {
-        adapter: 'mongoose',
-        url: databaseURL,
-        // TODO: Add data seeding here
-      },
-      lists: createSchema({
-        // Schema items go in here
-        User,
-      }),
-      ui: {
-        // Show the UI only for poeple who pass this test
-        isAccessAllowed: ({ session }) =>
-          // console.log(session);
-          !!session?.data,
-      },
-      session: withItemData(statelessSessions(sessionConfig), {
-        // GraphQL Query
-        User: 'id name email',
-      }),
-    })
-  );
+    },
+    db: {
+      adapter: 'mongoose',
+      url: databaseURL,
+      // TODO: Add data seeding here
+    },
+    lists: createSchema({
+      // Schema items go in here
+      User,
+      Product,
+      ProductImage,
+    }),
+    ui: {
+      // Show the UI only for poeple who pass this test
+      isAccessAllowed: ({ session }) =>
+        // console.log(session);
+        !!session?.data,
+    },
+    session: withItemData(statelessSessions(sessionConfig), {
+      // GraphQL Query
+      User: 'id name email',
+    }),
+  })
+);
